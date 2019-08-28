@@ -1,0 +1,12 @@
+[Unit]
+Description=LXP Webservice
+
+[Service]
+User=nobody
+Restart=always
+RestartSec=5
+WorkingDirectory=/home/pi/lxp-pylon-utils
+ExecStart=/usr/local/bin/bundle exec /home/pi/lxp-pylon-utils/lxp_server.rb
+
+[Install]
+WantedBy=default.target
