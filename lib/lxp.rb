@@ -1,5 +1,25 @@
 # frozen_string_literal: true
 
+# Decode packets from a LuxPower LXP ACS inverter.
+#
+# Sample usage:
+#
+#   # set your inverter to do UDP broadcasts to port 4346
+#
+#   ss = UDPSocket.new
+#   ss.setsockopt(Socket::SOL_SOCKET, Socket::SO_BROADCAST, true)
+#   ss.bind('255.255.255.255', 4346)
+#
+#   loop do
+#     data = ss.recvfrom(2000)[0]
+#     lxp.decode(data)
+#
+#     if lxp.populated
+#       # all 3 packets have been received,
+#       # use lxp accessors for whatever you want
+#     end
+#   end
+
 class LXP
   attr_reader :populated
 
