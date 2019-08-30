@@ -1,3 +1,4 @@
+#! /usr/bin/ruby
 # frozen_string_literal: true
 
 # quick reference on munging data packets :)
@@ -18,6 +19,8 @@
 #
 
 $LOAD_PATH.unshift './lib'
+
+require 'bundler/setup'
 
 require 'rubyserial'
 require 'json'
