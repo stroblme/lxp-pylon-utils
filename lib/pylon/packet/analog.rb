@@ -40,13 +40,12 @@ class Pylon
           c = i.info[o]
           o += 1
           c.times do
-            # this isn't quite right, should be 2s-complement
-            temps << (int(i.info[o, 2]) - 2731) / 10.0
+            temps << (int_complement(i.info[o, 2]) - 2731) / 10.0
             o += 2
           end
 
           # transmitted as mA / 100, so / 10 to get Amps
-          current = int(i.info[o, 2]) / 10.0
+          current = int_complement(i.info[o, 2]) / 10.0
           pack_voltage = int(i.info[o + 2, 2]) / 1000.0
           mah_remain = int(i.info[o + 4, 2])
           # i.info[o+6] # always 2 ?

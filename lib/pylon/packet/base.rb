@@ -127,6 +127,13 @@ class Pylon
           b << (idx * 8)
         end.inject(:|)
       end
+
+      # Might be better in a Utils module
+      def self.int_complement(bytes)
+        r = int(bytes)
+        r -= 0x10000 if r & 0x8000 == 0x8000
+        r
+      end
     end
   end
 end
