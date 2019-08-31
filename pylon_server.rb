@@ -66,12 +66,21 @@ port = Serial.new('/dev/ttyUSB0', 115_200)
 analog = Pylon::Packet::Analog.new
 analog.command = 0xFF # all units
 
+alarm = Pylon::Packet::Alarm.new
+alarm.command = 0xFF # all units
+
 loop do
   port.write(analog.to_ascii)
-  r = read_until_done(port)
+  analog_data = read_until_done(port)
+
+  port.write(alarm.to_ascii)
+  alarm_data = read_until_done(port)
 
   begin
-    p data = { analog: Pylon::Packet::Analog.parse(r) }
+    p data = {
+      analog: Pylon::Packet::Analog.parse(analog_data),
+      alarm: Pylon::Packet::Alarm.parse(alarm_data)
+    }
     json = JSON.generate(data)
     File.write(JSON_FILE, json)
   rescue StandardError

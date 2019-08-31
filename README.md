@@ -14,6 +14,11 @@ It runs a simple webapp that returns the contents of this JSON for any request, 
 
 The batteries can be communicated with over RS232 (console) or RS485. The Pylon class can be used with either with minimal modifications; I use RS485 as it can go a lot faster (115200bps vs the console's 1200bps by default).
 
-This uses a USB-RS485 which is on `/dev/ttyUSB0`, and fetches new information every 2 minutes, storing it in `/tmp/pylon_data.json`.
+`pylon_server.rb` uses USB-RS485 which is on `/dev/ttyUSB0`, and fetches new information every minute, storing it in `/tmp/pylon_data.json` (currently analog and alarm data are fetched). Again this is served over a HTTP webapp.
 
-Still WIP, so far only fetching analog data is done, but getting alarms could be useful too.
+There's also a `monitor.rb` which watches for the pylon data JSON changing and renders it in a terminal. It looks a bit like this:
+
+![](https://i.imgur.com/P4R0col.png)
+
+It's all very hardcoded for an 80x25 terminal and 4 battery packs, but it does the job for me.
+
