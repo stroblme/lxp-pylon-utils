@@ -18,7 +18,7 @@ The batteries can be communicated with over RS232 (console) or RS485. The Pylon 
 
 There's also a `monitor.rb` which watches for the pylon data JSON changing and renders it in a terminal. It looks a bit like this:
 
-![monitor.rb screenshot](https://i.imgur.com/ceZvDZt.png)
+![monitor.rb screenshot](https://i.imgur.com/bD5EXFA.png)
 
 It's a bit knocked together, so a bit messy, and all very hardcoded for an 80x24 terminal and 4 battery packs, but it does the job for me. Because it watches the JSON file for changes it must run on the same machine as `pylon_server` but could be trivially modified to fetch over HTTP every minute instead.
 

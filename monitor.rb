@@ -58,8 +58,8 @@ def render_pack(pack, data)
   end
 
   analog['temps'].each_with_index do |temp, idx|
-    r << CURSOR.move_to(y_offset + idx * 8, x_offset + 3)
-    str = format('%5.01fC', temp)
+    r << CURSOR.move_to(y_offset + (idx * 4), x_offset + 3)
+    str = format('%dC', temp)
     r << case alarm['temps'][idx]
          when 0 then PASTEL.green(str)
          when 1 then PASTEL.red(str)
@@ -67,15 +67,16 @@ def render_pack(pack, data)
          end
   end
 
-  # add a stat of my own, mV difference between low/high cell
-  r << CURSOR.move_to(y_offset + 40, x_offset + 3)
+  # min/max cell display, and mV difference between them
   max_v = analog['voltages'].max
   min_v = analog['voltages'].min
-  r << format('d: %2dmV', (max_v - min_v) * 1000.0)
+  r << CURSOR.move_to(y_offset + 21, x_offset + 3)
+  r << format('(%.3fv - %.3fv dV: %2dmV)',
+              min_v, max_v, (max_v * 1000) - (min_v * 1000))
 
   # rest are just alarm booleans
   r << CURSOR.move_to(y_offset + 40, x_offset)
-  str = 'CHARGE'
+  str = 'CHG_CUR'
   r << case alarm['charge_current']
        when 0 then PASTEL.green(str)
        when 1 then PASTEL.red(str)
@@ -83,7 +84,7 @@ def render_pack(pack, data)
        end
 
   r << CURSOR.move_to(y_offset + 40, x_offset + 1)
-  str = 'DISCHRG'
+  str = 'DIS_CUR'
   r << case alarm['discharge_current']
        when 0 then PASTEL.green(str)
        when 1 then PASTEL.red(str)
@@ -99,52 +100,51 @@ def render_pack(pack, data)
        end
 
   r << CURSOR.move_to(y_offset + 49, x_offset)
-  # module over voltage
-  r << red_if('OV', alarm['status1int'] & 0x1 == 0x1)
-
-  r << CURSOR.move_to(y_offset + 52, x_offset)
-  # cell under voltage
-  r << red_if('CUV', alarm['status1int'] & 0x2 == 0x2)
-
-  r << CURSOR.move_to(y_offset + 56, x_offset)
-  # charge over current
-  r << red_if('COC', alarm['status1int'] & 0x4 == 0x4)
-
-  r << CURSOR.move_to(y_offset + 60, x_offset)
-  # discharge over current
-  r << red_if('DOC', alarm['status1int'] & 0x10 == 0x10)
-
-  r << CURSOR.move_to(y_offset + 64, x_offset)
-  # discharge over temp
-  r << red_if('DOT', alarm['status1int'] & 0x20 == 0x20)
-
-  r << CURSOR.move_to(y_offset + 68, x_offset)
-  # charge over temp
-  r << red_if('COT', alarm['status1int'] & 0x40 == 0x40)
-
-  r << CURSOR.move_to(y_offset + 72, x_offset)
   # module under voltage
   r << red_if('UV', alarm['status1int'] & 0x80 == 0x80)
 
-  # status2
-  r << CURSOR.move_to(y_offset + 49, x_offset + 1)
+  r << CURSOR.move_to(y_offset + 53, x_offset)
+  # module over voltage
+  r << red_if('OV', alarm['status1int'] & 0x1 == 0x1)
+
+  r << CURSOR.move_to(y_offset + 57, x_offset)
+  # charge over current
+  r << red_if('CHG_OC', alarm['status1int'] & 0x4 == 0x4)
+
+  r << CURSOR.move_to(y_offset + 57, x_offset + 1)
+  # discharge over current
+  r << red_if('DIS_OC', alarm['status1int'] & 0x10 == 0x10)
+
+  r << CURSOR.move_to(y_offset + 64, x_offset)
+  # charge over temp
+  r << red_if('CHG_OT', alarm['status1int'] & 0x40 == 0x40)
+
+  r << CURSOR.move_to(y_offset + 64, x_offset + 1)
+  # discharge over temp
+  r << red_if('DIS_OT', alarm['status1int'] & 0x20 == 0x20)
+
+  r << CURSOR.move_to(y_offset + 71, x_offset)
   # charge mosfet
-  r << green_if('C_MOSFET', alarm['status2int'] & 0x2 == 0x2)
+  r << green_if('CHG_FET', alarm['status2int'] & 0x2 == 0x2)
 
-  r << CURSOR.move_to(y_offset + 59, x_offset + 1)
+  r << CURSOR.move_to(y_offset + 49, x_offset + 1)
+  # cell under voltage
+  r << red_if('CELL_UV', alarm['status1int'] & 0x2 == 0x2)
+
+  r << CURSOR.move_to(y_offset + 71, x_offset + 1)
   # discharge mosfet
-  r << green_if('D_MOSFET', alarm['status2int'] & 0x4 == 0x4)
-
-  r << CURSOR.move_to(y_offset + 72, x_offset + 1)
-  # using battery module power
-  r << green_if('ONBATT', alarm['status2int'] & 0x8 == 0x8)
+  r << green_if('DIS_FET', alarm['status2int'] & 0x4 == 0x4)
 
   r << CURSOR.move_to(y_offset + 49, x_offset + 2)
   r << red_if('BUZZ', alarm['status3int'] & 0x1 == 0x1)
 
-  r << CURSOR.move_to(y_offset + 58, x_offset + 2)
+  r << CURSOR.move_to(y_offset + 56, x_offset + 2)
   # fully charged
   r << green_if('FULL', alarm['status3int'] & 0x8 == 0x8)
+
+  r << CURSOR.move_to(y_offset + 62, x_offset + 2)
+  # using battery module power
+  r << green_if('ONBATT', alarm['status2int'] & 0x8 == 0x8)
 
   r << CURSOR.move_to(y_offset + 70, x_offset + 2)
   # effective discharge current
@@ -157,7 +157,7 @@ def render_pack(pack, data)
   # status 4 and 5
   r << CURSOR.move_to(y_offset + 49, x_offset + 3)
   r << red_if("S4: #{alarm['status4']}", alarm['status4int'].positive?)
-  r << CURSOR.move_to(y_offset + 65, x_offset + 3)
+  r << CURSOR.move_to(y_offset + 66, x_offset + 3)
   r << red_if("S5: #{alarm['status5']}", alarm['status5int'].positive?)
 
   r
@@ -184,18 +184,21 @@ PASTEL = Pastel.new
 CURSOR = TTY::Cursor
 print CURSOR.clear_screen
 
-data = JSON.parse(fh.read)
-render_data(data) # initial render
+CURSOR.invisible do
+  data = JSON.parse(fh.read)
+  render_data(data) # initial render
 
-notifier = INotify::Notifier.new
-notifier.watch(JSON_FILE, :modify) do
-  fh.rewind
-  begin
-    data = JSON.parse(fh.read)
-    render_data(data)
-  rescue StandardError
-    # ignore JSON parse error for now (need atomic file write?)
+  notifier = INotify::Notifier.new
+  notifier.watch(JSON_FILE, :modify) do
+    begin
+      fh.rewind
+      data = JSON.parse(fh.read)
+      render_data(data)
+    rescue JSON::ParserError
+      # ignore JSON parse error for now (need atomic file write?)
+      retry
+    end
   end
-end
 
-notifier.run
+  notifier.run
+end
