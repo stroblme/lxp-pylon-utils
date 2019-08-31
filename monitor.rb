@@ -38,16 +38,19 @@ def render_pack(pack, data)
   alarm = data['alarm'][pack]
 
   soc = 100 * (analog['mah_remain'] / analog['mah_total'].to_f)
-  stats = format('%.1fAh / %.1fAh (%d%% SOC) / %.3fV / %4.1fA / %d cycles',
+  stats = format('%.1fAh / %.1fAh (%d%% SOC) / ' +
+                 '%.3fV @ %4.1fA = %3dW / %d cycles',
                  analog['mah_remain'] / 1000.0,
                  analog['mah_total'] / 1000.0,
                  soc,
                  analog['pack_voltage'],
                  analog['current'],
+                 analog['pack_voltage'] * analog['current'],
                  analog['pack_cycles'])
 
   print TTY::Box.frame(top: x_offset - 1, left: 0,
                        width: 80, height: height,
+                       style: { border: { fg: :bright_yellow } },
                        title: { top_left: "Pack #{pack + 1}",
                                 top_right: stats })
 

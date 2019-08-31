@@ -28,20 +28,6 @@ require 'roda'
 
 require 'pylon/packet'
 
-JSON_FILE = '/tmp/pylon_data.json'
-class Web < Roda
-  route do |r|
-    r.get do
-      File.read(JSON_FILE)
-    end
-  end
-end
-
-# start a dead simple webserver
-Thread.new do
-  Rack::Server.start(Host: '0.0.0.0', Port: 8080, app: Web)
-end
-
 def read_until_done(port)
   r = String.new
 
@@ -63,30 +49,12 @@ def read_until_done(port)
 end
 
 port = Serial.new('/dev/ttyUSB0', 115_200)
-analog = Pylon::Packet::Analog.new
+analog = Pylon::Packet::Alarm.new
 analog.command = 0xFF # all units
 
-alarm = Pylon::Packet::Alarm.new
-alarm.command = 0xFF # all units
+port.write(analog.to_ascii)
+r = read_until_done(port)
 
-loop do
-  port.write(analog.to_ascii)
-  analog_data = read_until_done(port)
+#r = "~20024600D0F400040F010101010101010101010101010101050000000000000000020E4000000F000000000000000000000000000000050000000000000000000E4000000F000000000000000000000000000000050000000000000000000E4000000F000000000000000000000000000000050000000000000000000E400000CEDF\r"
+p Pylon::Packet::Alarm.parse(r)
 
-  port.write(alarm.to_ascii)
-  alarm_data = read_until_done(port)
-
-  begin
-    p data = {
-      analog: Pylon::Packet::Analog.parse(analog_data),
-      alarm: Pylon::Packet::Alarm.parse(alarm_data)
-    }
-    json = JSON.generate(data)
-    File.write(JSON_FILE, json)
-  rescue StandardError
-    # ignore invalid checksums, they do seem to happen occasionally
-    nil
-  end
-
-  sleep 20
-end
