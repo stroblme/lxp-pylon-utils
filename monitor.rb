@@ -43,16 +43,27 @@ def render_pack(pack, data)
                       title: { top_left: "Pack #{pack + 1}",
                                top_right: stats })
 
+  # min/max cell display, and mV difference between them
+  max_v = analog['voltages'].max
+  min_v = analog['voltages'].min
+  r << CURSOR.move_to(y_offset + 21, x_offset + 3)
+  r << format('(%.3fv - %.3fv dV: %2dmV)',
+              min_v, max_v, (max_v * 1000) - (min_v * 1000))
+
   # render voltages as 3 lines with 5 voltages in each
   analog['voltages'].each_slice(5).each_with_index do |arr, idx|
     arr.each_with_index do |voltage, idx2|
       arr_offset = (idx * 5) + idx2
       r << CURSOR.move_to(y_offset + idx2 * 8, x_offset + idx)
       str = format('%.03fv', voltage)
+      if max_v - min_v > 0.006
+        str = PASTEL.bold.on_blue(str) if voltage == min_v
+        str = PASTEL.bold.on_red(str) if voltage == max_v
+      end
       r << case alarm['voltages'][arr_offset]
            when 0 then PASTEL.green(str)
-           when 1 then PASTEL.red(str)
-           when 2 then PASTEL.yellow(str)
+           when 1 then PASTEL.clear.red(str)
+           when 2 then PASTEL.clear.yellow(str)
            end
     end
   end
@@ -66,13 +77,6 @@ def render_pack(pack, data)
          when 2 then PASTEL.yellow(str)
          end
   end
-
-  # min/max cell display, and mV difference between them
-  max_v = analog['voltages'].max
-  min_v = analog['voltages'].min
-  r << CURSOR.move_to(y_offset + 21, x_offset + 3)
-  r << format('(%.3fv - %.3fv dV: %2dmV)',
-              min_v, max_v, (max_v * 1000) - (min_v * 1000))
 
   # rest are just alarm booleans
   r << CURSOR.move_to(y_offset + 40, x_offset)

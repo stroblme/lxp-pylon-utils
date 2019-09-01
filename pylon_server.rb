@@ -50,19 +50,24 @@ def read_until_done(port)
   loop do
     input = port.read(4096)
     r << input
-
     break if input[-1] == "\r" # found an EOI, can stop immediately
 
-    e += 1 if input.empty?
-    break if e > 5
+    if input.empty?
+      # give up after reading 10 empty packets (spaced 0.3s apart; 3s)
+      e += 1
+      break if e > 10
 
-    sleep 0.3 # give the Pylon some time to respond, serial isn't instant
+      sleep 0.3 # give the Pylon some time to respond, serial isn't instant
+    else
+      e = 0
+      sleep 0.1
+    end
   end
 
   r
 end
 
-port = Serial.new('/dev/ttyUSB0', 115_200)
+port = Serial.new('/dev/ttyUSB0', 1200)
 analog = Pylon::Packet::Analog.new
 analog.command = 0xFF # all units
 
@@ -70,9 +75,11 @@ alarm = Pylon::Packet::Alarm.new
 alarm.command = 0xFF # all units
 
 loop do
+  port.read(4096) # empty port of any stale data
   port.write(analog.to_ascii)
   analog_data = read_until_done(port)
 
+  port.read(4096) # empty port of any stale data
   port.write(alarm.to_ascii)
   alarm_data = read_until_done(port)
 

@@ -13,7 +13,7 @@ class Pylon
 
         # set some defaults
         self.ver = 0x20
-        self.adr = 0x02 # default for RS485
+        self.adr = 0x01 # for RS232
         self.cid1 = 0x46 # cid1 is always 0x46 for every packet type
       end
 
