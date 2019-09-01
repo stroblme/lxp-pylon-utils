@@ -10,9 +10,14 @@ The inverter can be set to broadcast data about itself over UDP every 2 minutes.
 
 It runs a simple webapp that returns the contents of this JSON for any request, which can be graphed in Munin or whatever.
 
+Unfortunately all this is reverse engineering by watching LuxPower's own web portal for the numbers being transmitted, and matching those to UDP packets I can see on my local network at the same time - because LuxPower apparently refuse to give out the API documentation. I would like to flesh this out into being able to send the inverter commands as well, but without knowing how to calculate the checksums, there's no chance.
+
+
 ## PylonTech US2000 (maybe US3000 too)
 
 The batteries can be communicated with over RS232 (console) or RS485. The Pylon class can be used with either with minimal modifications; I use RS485 as it can go a lot faster (115200bps vs the console's 1200bps by default).
+
+Fortunately PylonTech appear a lot more hacker friendly than LuxPower, and I do have API documentation for the RS232/485 protocols for these. I'll add decoding of more packet types as I need them; for now analog and alarm data are done.
 
 `pylon_server.rb` uses an USB-RS485 adaptor which is on `/dev/ttyUSB0`, and fetches new information regularly, storing it in `/tmp/pylon_data.json` (currently analog and alarm data are fetched). Again this is served over a HTTP webapp.
 
