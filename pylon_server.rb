@@ -74,6 +74,9 @@ analog.command = 0xFF # all units
 alarm = Pylon::Packet::Alarm.new
 alarm.command = 0xFF # all units
 
+ci= Pylon::Packet::ChargeInfo.new
+ci.command = 0xFF # all units
+
 loop do
   port.read(4096) # empty port of any stale data
   port.write(analog.to_ascii)
@@ -83,10 +86,15 @@ loop do
   port.write(alarm.to_ascii)
   alarm_data = read_until_done(port)
 
+  port.read(4096) # empty port of any stale data
+  port.write(ci.to_ascii)
+  ci_data = read_until_done(port)
+
   begin
     p data = {
       analog: Pylon::Packet::Analog.parse(analog_data),
-      alarm: Pylon::Packet::Alarm.parse(alarm_data)
+      alarm: Pylon::Packet::Alarm.parse(alarm_data),
+      charge_info: Pylon::Packet::ChargeInfo.parse(ci_data)
     }
     json = JSON.generate(data)
     File.write(JSON_FILE, json)

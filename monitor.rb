@@ -25,6 +25,7 @@ def render_pack(pack, data)
 
   analog = data['analog'][pack]
   alarm = data['alarm'][pack]
+  ci = data['charge_info'][pack]
 
   soc = 100 * (analog['mah_remain'] / analog['mah_total'].to_f)
   stats = format('%.1fAh / %.1fAh (%d%% SOC) / ' \
@@ -56,7 +57,7 @@ def render_pack(pack, data)
       arr_offset = (idx * 5) + idx2
       r << CURSOR.move_to(y_offset + idx2 * 8, x_offset + idx)
       str = format('%.03fv', voltage)
-      if max_v - min_v > 0.006
+      if max_v - min_v > 0.010 # 10mV
         str = PASTEL.bold.on_blue(str) if voltage == min_v
         str = PASTEL.bold.on_red(str) if voltage == max_v
       end
@@ -140,15 +141,23 @@ def render_pack(pack, data)
   r << green_if('DIS_FET', alarm['status2int'] & 0x4 == 0x4)
 
   r << CURSOR.move_to(y_offset + 49, x_offset + 2)
-  r << red_if('BUZZ', alarm['status3int'] & 0x1 == 0x1)
+  r << red_if('BUZ', alarm['status3int'] & 0x1 == 0x1)
 
-  r << CURSOR.move_to(y_offset + 56, x_offset + 2)
+  r << CURSOR.move_to(y_offset + 53, x_offset + 2)
   # fully charged
   r << green_if('FULL', alarm['status3int'] & 0x8 == 0x8)
 
-  r << CURSOR.move_to(y_offset + 62, x_offset + 2)
+  r << CURSOR.move_to(y_offset + 58, x_offset + 2)
   # using battery module power
-  r << green_if('ONBATT', alarm['status2int'] & 0x8 == 0x8)
+  r << green_if('ONBAT', alarm['status2int'] & 0x8 == 0x8)
+
+  r << CURSOR.move_to(y_offset + 64, x_offset + 2)
+  # discharge enable
+  r << green_if('DE', ci['charge_statusint'] & 0x40 == 0x40)
+
+  r << CURSOR.move_to(y_offset + 67, x_offset + 2)
+  # charge enable
+  r << green_if('CE', ci['charge_statusint'] & 0x80 == 0x80)
 
   r << CURSOR.move_to(y_offset + 70, x_offset + 2)
   # effective discharge current
@@ -158,11 +167,25 @@ def render_pack(pack, data)
   # effective charge current
   r << green_if('ECC', alarm['status3int'] & 0x80 == 0x80)
 
-  # status 4 and 5
   r << CURSOR.move_to(y_offset + 49, x_offset + 3)
-  r << red_if("S4: #{alarm['status4']}", alarm['status4int'].positive?)
-  r << CURSOR.move_to(y_offset + 66, x_offset + 3)
-  r << red_if("S5: #{alarm['status5']}", alarm['status5int'].positive?)
+  # charge immediately (1); 5-9%
+  r << red_if('CI1', ci['charge_statusint'] & 0x20 == 0x20)
+
+  r << CURSOR.move_to(y_offset + 53, x_offset + 3)
+  # charge immediately (2); 9-13%
+  r << red_if('CI2', ci['charge_statusint'] & 0x10 == 0x10)
+
+  r << CURSOR.move_to(y_offset + 58, x_offset + 3)
+  # full charge request
+  r << red_if('FCR', ci['charge_statusint'] & 0x8 == 0x8)
+
+  r << CURSOR.move_to(y_offset + 63, x_offset + 3)
+  r << red_if(format('S4: %03d', alarm['status4int']),
+              alarm['status4int'].positive?)
+
+  r << CURSOR.move_to(y_offset + 71, x_offset + 3)
+  r << red_if(format('S5: %03d', alarm['status5int']),
+              alarm['status5int'].positive?)
 
   r
 end
