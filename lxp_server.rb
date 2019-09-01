@@ -3,6 +3,8 @@
 
 $LOAD_PATH.unshift 'lib'
 
+require 'bundler/setup'
+
 require 'lxp'
 require 'socket'
 require 'json'
@@ -47,6 +49,11 @@ loop do
   puts "#{Time.now} #{lxp.soc}% #{lxp.v_bat}V"
 
   h = keys.map { |k| [k, lxp.send(k)] }.to_h
+
+  # avoid writing bad data (can happen, we don't verify checksums)
+  next if h[:v_bat] > 60
+  next if h[:t_inner] > 100
+
   File.write(JSON_FILE, JSON.generate(h))
 end
 
