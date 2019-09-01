@@ -114,50 +114,50 @@ def render_pack(pack, data)
 
   r << CURSOR.move_to(y_offset + 57, x_offset)
   # charge over current
-  r << red_if('CHG_OC', alarm['status1int'] & 0x4 == 0x4)
+  r << red_if('C_OC', alarm['status1int'] & 0x4 == 0x4)
 
   r << CURSOR.move_to(y_offset + 57, x_offset + 1)
   # discharge over current
-  r << red_if('DIS_OC', alarm['status1int'] & 0x10 == 0x10)
+  r << red_if('D_OC', alarm['status1int'] & 0x10 == 0x10)
 
-  r << CURSOR.move_to(y_offset + 64, x_offset)
+  r << CURSOR.move_to(y_offset + 62, x_offset)
   # charge over temp
-  r << red_if('CHG_OT', alarm['status1int'] & 0x40 == 0x40)
+  r << red_if('C_OT', alarm['status1int'] & 0x40 == 0x40)
 
-  r << CURSOR.move_to(y_offset + 64, x_offset + 1)
+  r << CURSOR.move_to(y_offset + 62, x_offset + 1)
   # discharge over temp
-  r << red_if('DIS_OT', alarm['status1int'] & 0x20 == 0x20)
+  r << red_if('D_OT', alarm['status1int'] & 0x20 == 0x20)
 
-  r << CURSOR.move_to(y_offset + 71, x_offset)
+  r << CURSOR.move_to(y_offset + 67, x_offset)
   # charge mosfet
-  r << green_if('CHG_FET', alarm['status2int'] & 0x2 == 0x2)
+  r << green_if('C_FET', alarm['status2int'] & 0x2 == 0x2)
+
+  r << CURSOR.move_to(y_offset + 74, x_offset)
+  # charge enable
+  r << green_if('C_EN', ci['charge_statusint'] & 0x80 == 0x80)
 
   r << CURSOR.move_to(y_offset + 49, x_offset + 1)
   # cell under voltage
   r << red_if('CELL_UV', alarm['status1int'] & 0x2 == 0x2)
 
-  r << CURSOR.move_to(y_offset + 71, x_offset + 1)
+  r << CURSOR.move_to(y_offset + 67, x_offset + 1)
   # discharge mosfet
-  r << green_if('DIS_FET', alarm['status2int'] & 0x4 == 0x4)
+  r << green_if('D_FET', alarm['status2int'] & 0x4 == 0x4)
+
+  r << CURSOR.move_to(y_offset + 74, x_offset + 1)
+  # discharge enable
+  r << green_if('D_EN', ci['charge_statusint'] & 0x40 == 0x40)
 
   r << CURSOR.move_to(y_offset + 49, x_offset + 2)
   r << red_if('BUZ', alarm['status3int'] & 0x1 == 0x1)
 
-  r << CURSOR.move_to(y_offset + 53, x_offset + 2)
+  r << CURSOR.move_to(y_offset + 55, x_offset + 2)
   # fully charged
   r << green_if('FULL', alarm['status3int'] & 0x8 == 0x8)
 
-  r << CURSOR.move_to(y_offset + 58, x_offset + 2)
+  r << CURSOR.move_to(y_offset + 62, x_offset + 2)
   # using battery module power
   r << green_if('ONBAT', alarm['status2int'] & 0x8 == 0x8)
-
-  r << CURSOR.move_to(y_offset + 64, x_offset + 2)
-  # discharge enable
-  r << green_if('DE', ci['charge_statusint'] & 0x40 == 0x40)
-
-  r << CURSOR.move_to(y_offset + 67, x_offset + 2)
-  # charge enable
-  r << green_if('CE', ci['charge_statusint'] & 0x80 == 0x80)
 
   r << CURSOR.move_to(y_offset + 70, x_offset + 2)
   # effective discharge current
