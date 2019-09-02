@@ -36,8 +36,8 @@ class Pylon
             discharge_voltage_limit: discharge_voltage_limit,
             charge_current_limit: charge_current_limit,
             discharge_current_limit: discharge_current_limit,
-            charge_status: format('%08b', charge_status),
-            charge_statusint: charge_status
+            charge_status_bits: format('%08b', charge_status),
+            charge_status: charge_status
           }
         end
       end

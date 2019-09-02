@@ -62,16 +62,16 @@ class Pylon
             charge_current: charge_current,
             pack_voltage: pack_voltage,
             discharge_current: discharge_current,
-            status1int: status1,
-            status1: format('%08b', status1),
-            status2int: status2,
-            status2: format('%08b', status2),
-            status3int: status3,
-            status3: format('%08b', status3),
-            status4int: status4,
-            status4: format('%08b', status4),
-            status5int: status5,
-            status5: format('%08b', status5)
+            status1: status1,
+            status1_bits: format('%08b', status1),
+            status2: status2,
+            status2_bits: format('%08b', status2),
+            status3: status3,
+            status3_bits: format('%08b', status3),
+            status4: status4,
+            status4_bits: format('%08b', status4),
+            status5: status5,
+            status5_bits: format('%08b', status5)
           }
         end
       end
