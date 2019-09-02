@@ -8,6 +8,18 @@ The inverter by default sends information about itself to LuxPower every 2 minut
 
 ![LXP ACS Network Settings](https://i.imgur.com/teygH6h.png)
 
+`config.ini` should look like this. Replace your real serials (they're placed into data packets) and the address/port are used to connect to.
+
+```ini
+[datalog]
+serial = AB12345678
+
+[inverter]
+serial = 1234567890
+address = 192.168.0.209
+port = 4346
+```
+
 `lxp_server.rb` opens a socket to the TCP server and writes some JSON containing the details I want into `/tmp/lxp_data.json`.
 
 It runs a simple webapp that returns the contents of this JSON for any request, which can be graphed in Munin or whatever.

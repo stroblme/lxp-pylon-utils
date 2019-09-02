@@ -4,6 +4,7 @@ GEM
     ast (2.4.0)
     equatable (0.6.1)
     ffi (1.11.1)
+    inifile (3.0.0)
     jaro_winkler (1.5.3)
     parallel (1.17.0)
     parser (2.6.3.0)
@@ -45,6 +46,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  inifile
   pastel
   rb-inotify
   roda

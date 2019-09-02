@@ -9,6 +9,7 @@ require 'lxp'
 require 'socket'
 require 'json'
 require 'roda'
+require 'inifile'
 
 JSON_FILE = '/tmp/lxp_data.json'
 class Web < Roda
@@ -19,7 +20,8 @@ class Web < Roda
   end
 end
 
-ss = TCPSocket.new('192.168.0.209', 4346)
+config = IniFile.load('config.ini')
+ss = TCPSocket.new(config['inverter']['address'], config['inverter']['port'])
 
 lxp = LXP.new
 
