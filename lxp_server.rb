@@ -19,9 +19,7 @@ class Web < Roda
   end
 end
 
-ss = UDPSocket.new
-ss.setsockopt(Socket::SOL_SOCKET, Socket::SO_BROADCAST, true)
-ss.bind('255.255.255.255', 4346)
+ss = TCPSocket.new('192.168.0.209', 4346)
 
 lxp = LXP.new
 

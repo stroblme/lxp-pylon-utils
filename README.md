@@ -4,9 +4,11 @@ The code in this repository is what I use to monitor my LuxPower LXP 3600ACS inv
 
 ## LXP 3600ACS
 
-The inverter can be set to broadcast data about itself over UDP every 2 minutes.
+The inverter by default sends information about itself to LuxPower every 2 minutes. It can optionally be configured with a second network endpoint; I set this to TCP Server with a port of 4346, which means you can connect to the inverter on that port and get the same information sent to you. You can also send it commands. So the "Network Setting" page of my inverter looks like this:
 
-`lxp_server.rb` opens a socket listening for these broadcasts and writes some JSON containing the details I want into `/tmp/lxp_data.json`.
+![LXP ACS Network Settings](https://i.imgur.com/teygH6h.png)
+
+`lxp_server.rb` opens a socket to the TCP server and writes some JSON containing the details I want into `/tmp/lxp_data.json`.
 
 It runs a simple webapp that returns the contents of this JSON for any request, which can be graphed in Munin or whatever.
 
