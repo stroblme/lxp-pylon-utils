@@ -21,7 +21,11 @@ class Web < Roda
 end
 
 config = IniFile.load('config.ini')
-ss = TCPSocket.new(config['inverter']['address'], config['inverter']['port'])
+s = TCPSocket.new(config['inverter']['address'], config['inverter']['port'])
+s.setsockopt(Socket::SOL_SOCKET, Socket::SO_KEEPALIVE, true)
+s.setsockopt(Socket::SOL_TCP, Socket::TCP_KEEPIDLE, 50)
+s.setsockopt(Socket::SOL_TCP, Socket::TCP_KEEPINTVL, 10)
+s.setsockopt(Socket::SOL_TCP, Socket::TCP_KEEPCNT, 5)
 
 lxp = LXP.new
 
@@ -41,7 +45,7 @@ Thread.new do
 end
 
 loop do
-  data = ss.recvfrom(2000)[0]
+  data = s.recvfrom(2000)[0]
   lxp.decode(data)
 
   next unless lxp.populated
@@ -57,4 +61,4 @@ loop do
   File.write(JSON_FILE, JSON.generate(h))
 end
 
-ss.close
+s.close
