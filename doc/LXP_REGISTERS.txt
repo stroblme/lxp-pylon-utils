@@ -35,7 +35,7 @@ settings, apply your changes, and set the new value back.
    bit 3 = charge priority (charge before supplying load)
    bit 2 = forced discharge
    bit 1 = normal/standby (does not appear to save any power anyway)
-   bit 0 = seamlessly enable (whatever that is)
+   bit 0 = seamless eps switching
 22 START_PV_VOLT
 23 CONNECT_TIME
 24 RECONNECT_TIME
