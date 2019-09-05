@@ -199,10 +199,9 @@ def red_if(str, bool)
 end
 
 def render_data(data)
-  print render_pack(1, data)
-  print render_pack(2, data)
-  print render_pack(3, data)
-  print render_pack(4, data)
+  data['analog'].count.times do |n|
+    print render_pack(n + 1, data)
+  end
 end
 
 fh = File.open(JSON_FILE, 'r')

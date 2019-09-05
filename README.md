@@ -39,7 +39,7 @@ There's also a `monitor.rb` which watches for the pylon data JSON changing and r
 
 ![monitor.rb screenshot](https://i.imgur.com/Fq0WrT0.png)
 
-It's a bit knocked together, so a bit messy, and all very hardcoded for an 80x24 terminal and 4 battery packs, but it does the job for me. Because it watches the JSON file for changes it must run on the same machine as `pylon_server` but could be trivially modified to fetch over HTTP every minute instead.
+It's a bit knocked together, so a bit messy, and hardcoded for an 80x24 terminal, but it does the job for me. Because it watches the JSON file for changes it must run on the same machine as `pylon_server` but could be trivially modified to fetch over HTTP every minute instead.
 
 On the left are individual cell voltages. These go yellow or red if the battery sends an alarm about them (voltage too low or too high). I added my own warnings to these too; if the difference between the lowest and highest cell is more than 10mV, the lowest will get a blue background and the highest will get a red background.
 
