@@ -9,6 +9,8 @@ require 'inifile'
 
 require 'lxp/packet'
 
+include LXP::Packet::RegisterBits
+
 config = IniFile.load('config.ini')
 
 pkt = LXP::Packet::ReadSingle.new
@@ -17,8 +19,8 @@ pkt.register = LXP::Packet::Registers::DISCHG_CUT_OFF_SOC_EOD
 # testing random stuff, careful :)
 #pkt = LXP::Packet::WriteSingle.new
 #pkt.register = 21
-##pkt.value = 0b01010100 + (0b11110011 << 8) # register 21
-# pkt.discharge_rate = 45
+#pkt.value = R21_DEFAULTS # | AC_CHARGE_ENABLE
+# pkt.discharge_rate = 70
 # pkt.discharge_cut_off = 20
 
 pkt.datalog_serial = config['datalog']['serial'].to_s
