@@ -49,17 +49,23 @@ class LXP
         raise 'invalid packet' if bdata[0] != 161 || bdata[1] != 26
 
         i = new
-        # header is always 20 bytes I think.
+
+        # header is always 20 bytes
         i.header[0, 20] = bdata[0, 20]
 
-        # data can vary, have seen replies of 17 - 19 bytes.
+        # data can vary from 17 bytes upwards
         i.data = bdata[20, i.data_length - 2] # -2, don't copy checksum
+        raise 'bad data length' unless i.data.length != i.data_length
 
         # calculate checksum and compare to input
         i.update_checksum
         raise 'invalid checksum' if i.chksum != bdata[-2..-1]
 
         i
+      end
+
+      def packet_length
+        @header[4] | @header[5] >> 8
       end
 
       def packet_length=(packet_length)

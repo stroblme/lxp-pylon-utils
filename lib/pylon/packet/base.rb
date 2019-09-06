@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 class Pylon
-  # Generate and parse packets to talk to a Pylontech battery unit
   class Packet
     class Base
       attr_accessor :header, :info, :chksum
