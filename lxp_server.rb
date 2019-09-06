@@ -5,7 +5,7 @@ $LOAD_PATH.unshift 'lib'
 
 require 'bundler/setup'
 
-require 'lxp'
+require 'lxp/packet'
 require 'socket'
 require 'json'
 require 'roda'
@@ -27,38 +27,28 @@ s.setsockopt(Socket::SOL_TCP, Socket::TCP_KEEPIDLE, 50)
 s.setsockopt(Socket::SOL_TCP, Socket::TCP_KEEPINTVL, 10)
 s.setsockopt(Socket::SOL_TCP, Socket::TCP_KEEPCNT, 5)
 
-lxp = LXP.new
-
-keys = %i[
-  status
-  soc v_bat
-  v_bus1 v_bus2
-  t_inner t_rad1 t_rad2
-  max_chg_curr max_dischg_curr
-  bat_status0 bat_status1 bat_status2 bat_status3
-  bat_status4 bat_status5 bat_status6 bat_status7
-  bat_status8 bat_status9 bat_status_inv
-]
+output = nil # setup scope
 
 Thread.new do
   Rack::Server.start(Host: '0.0.0.0', Port: 8081, app: Web)
 end
 
 loop do
-  data = s.recvfrom(2000)[0]
-  lxp.decode(data)
+  parser = LXP::Packet::Parser.new(s.recvfrom(2000)[0])
+  pkt = parser.parse
 
-  next unless lxp.populated
-
-  puts "#{Time.now} #{lxp.soc}% #{lxp.v_bat}V"
-
-  h = keys.map { |k| [k, lxp.send(k)] }.to_h
-
-  # avoid writing bad data (can happen, we don't verify checksums)
-  next if h[:v_bat] > 60
-  next if h[:t_inner] > 100
-
-  File.write(JSON_FILE, JSON.generate(h))
+  case pkt
+  when LXP::Packet::ReadInput1
+    # first packet starts a new hash
+    output = pkt.to_h
+  when LXP::Packet::ReadInput2
+    # second packet merges in
+    output.merge!(pkt.to_h)
+  when LXP::Packet::ReadInput3
+    # final packet merges in and saves the result
+    output.merge!(pkt.to_h)
+    File.write(JSON_FILE, JSON.generate(output))
+  end
 end
 
 s.close
