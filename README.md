@@ -1,8 +1,8 @@
 # LXP & PylonTech Monitoring in Ruby
 
-The code in this repository is what I use to monitor my LuxPower LXP 3600ACS inverter and a stack of PylonTech US2000 batteries (a cheaper version of a Powerwall).
+The code in this repository is what I use to communicate with my LuxPower LXP 3600ACS inverter and a stack of PylonTech US2000 batteries (a cheaper version of a Powerwall).
 
-## LXP 3600ACS
+## LXP 3600 ACS
 
 The inverter by default sends information about itself to LuxPower every 2 minutes. It can optionally be configured with a second network endpoint; I set this to TCP Server with a port of 4346, which means you can connect to the inverter on that port and get the same information sent to you. You can also send it commands. So the "Network Setting" page of my inverter looks like this:
 
@@ -24,9 +24,9 @@ port = 4346
 
 It runs a simple webapp that returns the contents of this JSON for any request, which can be graphed in Munin or whatever.
 
-Unfortunately the libraries that drive this are all reverse engineered because LuxPower refuse to release API documentation for ths inverter.
+Unfortunately LuxPower refuse to release API documentation for this inverter, so the protocol and libraries that drive this are all reverse engineered.
 
-That said, I've managed to work out most of it. You can parse "input" packets (via `ReadInput`) from the inverter (which are the data sent in 3 packets at 2 minute intervals, concerning energy flows and states), request readings of settings (via `ReadHold`) for a specific register, and then modify and write those settings back (via `WriteSingle`).
+That said, I've managed to work out most of it. You can parse "input" packets (via `ReadInput`) from the inverter (which are the data sent in 3 packets at 2 minute intervals, concerning energy flows and states), request readings of settings (via `ReadHold`) for a specific register, and then modify and write those settings back (via `WriteSingle`). There's a way to write multiple values at once too but I've not looked at that yet (possibly for setting times?).
 
 See the docs in doc/ for a list of registers and my notes on how the packets are constructed. Please remember there may be errors so test carefully before letting any of this loose on your own kit. To repeat, this is all detective work by myself without the assistance of any official docs.
 
