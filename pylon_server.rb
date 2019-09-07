@@ -1,20 +1,10 @@
-#! /usr/bin/ruby
+#! /usr/bin/env ruby
 # frozen_string_literal: true
 
-# quick reference on munging data packets :)
-#
-# bytes = "~20004642E00200FD37\r".bytes.map { |n| sprintf("%02X", n) }
-# => ["7E", "32", "30", "30", "30", "34", "36", "34", "32", "45", "30", "30", "32", "30", "30", "46", "44", "33", "37", "0D"]
-#
-# and..
-#
-# str = bytes.pack('H*' * bytes.length)
-# => => "~20004642E00200FD37\r"
-#
-# can be useful to get actual ints. this only works if you cut off SOI and EOI
+# convert hex input to array of ints:
 #
 #   str = '20024642E002FFFD09'
-#   [str].pack('H*').unpack('C' * (str.length/2))
+#   [str.tr!(' ', '')].pack('H*').unpack('C' * (str.length/2))
 #   # => [32, 2, 70, 66, 224, 2, 255, 253, 9]
 #
 
@@ -74,7 +64,7 @@ analog.command = 0xFF # all units
 alarm = Pylon::Packet::Alarm.new
 alarm.command = 0xFF # all units
 
-ci= Pylon::Packet::ChargeInfo.new
+ci = Pylon::Packet::ChargeInfo.new
 ci.command = 0xFF # all units
 
 loop do
