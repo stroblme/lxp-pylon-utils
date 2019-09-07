@@ -24,7 +24,11 @@ port = 4346
 
 It runs a simple webapp that returns the contents of this JSON for any request, which can be graphed in Munin or whatever.
 
-Unfortunately all this is reverse engineering by watching LuxPower's own web portal for the numbers being transmitted, and matching those to UDP packets I can see on my local network at the same time - because LuxPower apparently refuse to give out the API documentation. I would like to flesh this out into being able to send the inverter commands as well, but without knowing how to calculate the checksums, there's no chance.
+Unfortunately the libraries that drive this are all reverse engineered because LuxPower refuse to release API documentation for ths inverter.
+
+That said, I've managed to work out most of it. You can parse "input" packets (via `ReadInput`) from the inverter (which are the data sent in 3 packets at 2 minute intervals, concerning energy flows and states), request readings of settings (via `ReadHold`) for a specific register, and then modify and write those settings back (via `WriteSingle`).
+
+See the docs in doc/ for a list of registers and my notes on how the packets are constructed. Please remember there may be errors so test carefully before letting any of this loose on your own kit. To repeat, this is all detective work by myself without the assistance of any official docs.
 
 
 ## PylonTech US2000 (maybe US3000 too)
