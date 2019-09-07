@@ -21,9 +21,7 @@ class LXP
         @header[0] = 161
         @header[1] = 26
 
-        # protocol
-        @header[2] = 1
-        @header[3] = 0
+        self.protocol = 1
 
         # length after first 6 bytes maybe?
         self.packet_length = 32
@@ -64,6 +62,15 @@ class LXP
         i
       end
 
+      def protocol
+        @header[2] | @header[3] >> 8
+      end
+
+      def protocol=(protocol)
+        @header[2] = protocol & 0xff
+        @header[3] = (protocol >> 8) & 0xff
+      end
+
       def packet_length
         @header[4] | @header[5] >> 8
       end
@@ -96,12 +103,38 @@ class LXP
         @data[2, 10] = inverter_serial.bytes
       end
 
+      def register
+        @data[12] | @data[13] >> 8
+      end
+
       def register=(register)
         @data[12] = register & 0xff
         @data[13] = (register >> 8) & 0xff
       end
 
+      def value_length
+        protocol == 1 ? 2 : @data[14]
+      end
+
+      # protocol 1 has value at 14 and 15
+      # protocol 2 has length at 14, then that many bytes of values
+      #
+      # So this can return an int or an array.
+      #
+      def value
+        case protocol
+        when 1 then @data[14] | @data[15] >> 8
+        when 2 then @data[15, value_length]
+        end
+      end
+
+      # this only makes sense for protocol 1 at the moment.
+      # for 2 we'd need to append to an array, and not sure that
+      # is even used (sending an array of values to inverter)
+      # (maybe with W_MULTI?)
       def value=(value)
+        raise 'cannot set value with protocol 2 yet' if protocol == 2
+
         @data[14] = value & 0xff
         @data[15] = (value >> 8) & 0xff
       end

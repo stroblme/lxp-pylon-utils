@@ -13,7 +13,7 @@ include LXP::Packet::RegisterBits
 
 config = IniFile.load('config.ini')
 
-pkt = LXP::Packet::ReadSingle.new
+pkt = LXP::Packet::ReadHold.new
 pkt.register = LXP::Packet::Registers::DISCHG_CUT_OFF_SOC_EOD
 
 # testing random stuff, careful :)
@@ -30,6 +30,7 @@ p pkt.bytes
 
 ss = TCPSocket.new(config['inverter']['address'], config['inverter']['port'])
 ss.write(pkt.to_bin)
-p r = ss.recvfrom(2000)[0]
+p input = ss.recvfrom(2000)[0]
 
-p LXP::Packet::Base.parse(r)
+r = LXP::Packet::Parser.parse(input)
+p r.value

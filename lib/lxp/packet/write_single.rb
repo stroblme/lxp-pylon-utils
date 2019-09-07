@@ -8,9 +8,7 @@ class LXP
       def initialize
         super
 
-        # write single value
-        self.device_function = 6
-
+        self.device_function = DeviceFunctions::WRITE_SINGLE
         self.data_length = 18
       end
 
