@@ -20,8 +20,8 @@ class LXP
           v_acr: Utils.int(@data[39, 2], :lsb) / 10.0, # V
           f_ac: Utils.int(@data[45, 2], :lsb) / 100.0, # Hz
 
-          p_inv: Utils.int(@data[47, 2], :lsb) / 10.0, # W
-          p_rec: Utils.int(@data[49, 2], :lsb) / 10.0, # W
+          p_inv: Utils.int(@data[47, 2], :lsb), # W
+          p_rec: Utils.int(@data[49, 2], :lsb), # W
 
           v_eps: Utils.int(@data[55, 2], :lsb) / 10.0, # V
           f_eps: Utils.int(@data[61, 2], :lsb) / 100.0, # Hz
