@@ -33,6 +33,7 @@ class LXP
       def parse_translated_data
         kls = case bdata[21] # device_function
               when DeviceFunctions::READ_HOLD then ReadHold
+              when DeviceFunctions::WRITE_SINGLE then WriteSingle
               when DeviceFunctions::READ_INPUT then parse_input
               else
                 raise "unhandled device_function #{bdata[21]}"

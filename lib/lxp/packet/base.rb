@@ -94,6 +94,10 @@ class LXP
         @header[19] = (data_length >> 8) & 0xff
       end
 
+      def device_function
+        @data[1]
+      end
+
       def device_function=(device_function)
         @data[1] = device_function
       end
@@ -112,8 +116,18 @@ class LXP
         @data[13] = (register >> 8) & 0xff
       end
 
+      def value_length_byte?
+        @value_length_byte ||=
+          protocol == 2 &&
+          device_function != DeviceFunctions::WRITE_SINGLE
+      end
+
       def value_length
-        protocol == 1 ? 2 : @data[14]
+        if value_length_byte?
+          @data[14]
+        else
+          2
+        end
       end
 
       # protocol 1 has value at 14 and 15
@@ -122,9 +136,10 @@ class LXP
       # So this can return an int or an array.
       #
       def value
-        case protocol
-        when 1 then @data[14] | @data[15] >> 8
-        when 2 then @data[15, value_length]
+        if value_length_byte?
+          @data[15, value_length]
+        else
+          @data[14] | @data[15] >> 8
         end
       end
 
