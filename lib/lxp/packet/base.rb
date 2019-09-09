@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require_relative 'device_functions'
+
 class LXP
   class Packet
     class Base
