@@ -19,10 +19,12 @@ require 'roda'
 require 'pylon/packet'
 
 JSON_FILE = '/tmp/pylon_data.json'
+JSON_DATA = File.read(JSON_FILE) if File.exist?(JSON_FILE)
+
 class Web < Roda
   route do |r|
     r.get do
-      File.read(JSON_FILE)
+      JSON_DATA
     end
   end
 end
@@ -86,8 +88,8 @@ loop do
       alarm: Pylon::Packet::Alarm.parse(alarm_data),
       charge_info: Pylon::Packet::ChargeInfo.parse(ci_data)
     }
-    json = JSON.generate(data)
-    File.write(JSON_FILE, json)
+    JSON_DATA.replace(JSON.generate(data))
+    File.write(JSON_FILE, JSON_DATA)
   rescue StandardError
     # ignore invalid checksums, they do seem to happen occasionally
     nil

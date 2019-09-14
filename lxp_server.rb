@@ -12,10 +12,12 @@ require 'roda'
 require 'inifile'
 
 JSON_FILE = '/tmp/lxp_data.json'
+JSON_DATA = File.read(JSON_FILE) if File.exist?(JSON_FILE)
+
 class Web < Roda
   route do |r|
     r.get do
-      File.read(JSON_FILE)
+      JSON_DATA
     end
   end
 end
@@ -47,7 +49,8 @@ loop do
   when LXP::Packet::ReadInput3
     # final packet merges in and saves the result
     output.merge!(pkt.to_h)
-    File.write(JSON_FILE, JSON.generate(output))
+    JSON_DATA.replace(JSON.generate(output))
+    File.write(JSON_FILE, JSON_DATA)
   end
 end
 
