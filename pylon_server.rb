@@ -19,7 +19,7 @@ require 'roda'
 require 'pylon/packet'
 
 JSON_FILE = '/tmp/pylon_data.json'
-JSON_DATA = File.read(JSON_FILE) if File.exist?(JSON_FILE)
+JSON_DATA = File.exist?(JSON_FILE) ? File.read(JSON_FILE) : String.new
 
 class Web < Roda
   route do |r|
