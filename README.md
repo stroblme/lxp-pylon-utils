@@ -18,6 +18,10 @@ serial = AB12345678
 serial = 1234567890
 address = 192.168.0.209
 port = 4346
+
+[influx]
+database = foo
+host = 192.168.5.100
 ```
 
 `lxp_server.rb` opens a socket to the TCP server and writes some JSON containing the details I want into `/tmp/lxp_data.json`.

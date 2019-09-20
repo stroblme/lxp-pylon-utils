@@ -15,11 +15,15 @@ require 'bundler/setup'
 require 'rubyserial'
 require 'json'
 require 'roda'
+require 'inifile'
+require 'influxdb'
 
 require 'pylon/packet'
 
 JSON_FILE = '/tmp/pylon_data.json'
 JSON_DATA = File.exist?(JSON_FILE) ? File.read(JSON_FILE) : String.new
+
+CONFIG = IniFile.load('config.ini')
 
 class Web < Roda
   route do |r|
@@ -59,6 +63,47 @@ def read_until_done(port)
   r
 end
 
+def update_influx(data)
+  influx = InfluxDB::Client.new CONFIG['influx']['database'],
+                                host: CONFIG['influx']['host']
+
+  points = data[:analog].each_with_index.flat_map do |pack, pack_idx|
+    pack[:voltages].each_with_index.map do |voltage, cell_idx|
+      {
+        series: 'pylontech_cells',
+        tags: { pack: pack_idx + 1, cell: cell_idx + 1 },
+        values: { voltage: voltage }
+      }
+    end
+  end
+  influx.write_points(points)
+
+  points = data[:analog].each_with_index.flat_map do |pack, pack_idx|
+    pack[:temps].each_with_index.map do |temp, t_idx|
+      {
+        series: 'pylontech_temps',
+        tags: { pack: pack_idx + 1, temp: t_idx + 1 },
+        values: { temperature: temp }
+      }
+    end
+  end
+  influx.write_points(points)
+
+  points = data[:analog].each_with_index.map do |pack, pack_idx|
+    {
+      series: 'pylontech_pack',
+      tags: { pack: pack_idx + 1 },
+      values: {
+        voltage: pack[:pack_voltage],
+        current: pack[:current],
+        mah_remain: pack[:mah_remain],
+        mah_total: pack[:mah_total]
+      }
+    }
+  end
+  influx.write_points(points)
+end
+
 port = Serial.new('/dev/ttyUSB0', 1200)
 analog = Pylon::Packet::Analog.new
 analog.command = 0xFF # all units
@@ -90,6 +135,7 @@ loop do
     }
     JSON_DATA.replace(JSON.generate(data))
     File.write(JSON_FILE, JSON_DATA)
+    update_influx(data)
   rescue StandardError
     # ignore invalid checksums, they do seem to happen occasionally
     nil

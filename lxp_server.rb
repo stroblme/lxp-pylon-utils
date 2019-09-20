@@ -10,9 +10,12 @@ require 'socket'
 require 'json'
 require 'roda'
 require 'inifile'
+require 'influxdb'
 
 JSON_FILE = '/tmp/lxp_data.json'
 JSON_DATA = File.exist?(JSON_FILE) ? File.read(JSON_FILE) : String.new
+
+CONFIG = IniFile.load('config.ini')
 
 class Web < Roda
   route do |r|
@@ -22,8 +25,18 @@ class Web < Roda
   end
 end
 
-config = IniFile.load('config.ini')
-s = TCPSocket.new(config['inverter']['address'], config['inverter']['port'])
+def update_influx(data)
+  influx = InfluxDB::Client.new CONFIG['influx']['database'],
+                                host: CONFIG['influx']['host']
+
+  influx.write_point 'lxp_inverter',
+                     values: { v_bat: data[:v_bat], soc: data[:soc],
+                               t_inner: data[:t_inner],
+                               t_rad_1: data[:t_rad_1],
+                               t_rad_2: data[:t_rad_2] }
+end
+
+s = TCPSocket.new(CONFIG['inverter']['address'], CONFIG['inverter']['port'])
 s.setsockopt(Socket::SOL_SOCKET, Socket::SO_KEEPALIVE, true)
 s.setsockopt(Socket::SOL_TCP, Socket::TCP_KEEPIDLE, 50)
 s.setsockopt(Socket::SOL_TCP, Socket::TCP_KEEPINTVL, 10)
@@ -51,6 +64,7 @@ loop do
     output.merge!(pkt.to_h)
     JSON_DATA.replace(JSON.generate(output))
     File.write(JSON_FILE, JSON_DATA)
+    update_influx(output)
   end
 end
 

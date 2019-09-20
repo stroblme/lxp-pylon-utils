@@ -2,6 +2,7 @@
 
 source 'https://rubygems.org'
 
+gem 'influxdb'
 gem 'inifile'
 gem 'pastel'
 gem 'rb-inotify'
