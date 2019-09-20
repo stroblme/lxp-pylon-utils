@@ -23,10 +23,10 @@ class Pylon
         o = 1
 
         packs.times.map do
-          charge_voltage_limit = int(i.info[o, 2])
-          discharge_voltage_limit = int(i.info[o + 2, 2])
-          charge_current_limit = int(i.info[o + 4, 2])
-          discharge_current_limit = int(i.info[o + 6, 2])
+          charge_voltage_limit = int(i.info[o, 2]) / 1000.0
+          discharge_voltage_limit = int(i.info[o + 2, 2]) / 1000.0
+          charge_current_limit = int(i.info[o + 4, 2]) / 10.0
+          discharge_current_limit = int(i.info[o + 6, 2]) / 10.0
           charge_status = i.info[o + 8]
 
           o += 9
