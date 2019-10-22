@@ -29,11 +29,7 @@ def update_influx(data)
   influx = InfluxDB::Client.new CONFIG['influx']['database'],
                                 host: CONFIG['influx']['host']
 
-  influx.write_point 'lxp_inverter',
-                     values: { v_bat: data[:v_bat], soc: data[:soc],
-                               t_inner: data[:t_inner],
-                               t_rad_1: data[:t_rad_1],
-                               t_rad_2: data[:t_rad_2] }
+  influx.write_point 'lxp_inverter', values: data
 end
 
 s = TCPSocket.new(CONFIG['inverter']['address'], CONFIG['inverter']['port'])

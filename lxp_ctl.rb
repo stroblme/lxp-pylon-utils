@@ -13,24 +13,33 @@ include LXP::Packet::RegisterBits
 
 config = IniFile.load('config.ini')
 
-pkt = LXP::Packet::ReadHold.new
-pkt.register = LXP::Packet::Registers::DISCHG_CUT_OFF_SOC_EOD
+# pkt = LXP::Packet::ReadHold.new
+# pkt.register = LXP::Packet::Registers::DISCHG_CUT_OFF_SOC_EOD
 
-# testing random stuff, careful :)
-#pkt = LXP::Packet::WriteSingle.new
-#pkt.register = 21
-#pkt.value = R21_DEFAULTS # | AC_CHARGE_ENABLE
-# pkt.discharge_rate = 70
-# pkt.discharge_cut_off = 20
+pkt = LXP::Packet::WriteSingle.new
+cmd = ARGV.shift
+case cmd
+when 'discharge_power'
+  pkt.register = LXP::Packet::Registers::DISCHG_POWER_PERCENT_CMD
+when 'cutoff'
+  pkt.register = LXP::Packet::Registers::DISCHG_CUT_OFF_SOC_EOD
+else
+  puts 'Unknown command'
+  exit 1
+end
+
+pkt.value = ARGV.shift.to_i
+
+# how to set register 21..
+# pkt.register = 21
+# pkt.value = R21_DEFAULTS # | AC_CHARGE_ENABLE
 
 pkt.datalog_serial = config['datalog']['serial'].to_s
 pkt.inverter_serial = config['inverter']['serial'].to_s
 
-p pkt.bytes
-
 ss = TCPSocket.new(config['inverter']['address'], config['inverter']['port'])
 ss.write(pkt.to_bin)
-p input = ss.recvfrom(2000)[0]
+input = ss.recvfrom(2000)[0]
 
 r = LXP::Packet::Parser.parse(input)
 p r.value
