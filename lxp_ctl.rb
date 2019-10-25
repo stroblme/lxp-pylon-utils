@@ -39,7 +39,15 @@ pkt.inverter_serial = config['inverter']['serial'].to_s
 
 ss = TCPSocket.new(config['inverter']['address'], config['inverter']['port'])
 ss.write(pkt.to_bin)
-input = ss.recvfrom(2000)[0]
 
-r = LXP::Packet::Parser.parse(input)
-p r.value
+r = nil
+
+# wait for the correct reply; ignore heartbeats and other stuff
+loop do
+  input = ss.recvfrom(2000)[0]
+  puts "IN: #{input.unpack('C*')}"
+  r = LXP::Packet::Parser.parse(input)
+  break if r.is_a?(pkt.class) && r.register == pkt.register
+end
+
+puts "Result = #{r.value}"
