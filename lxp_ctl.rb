@@ -19,6 +19,8 @@ config = IniFile.load('config.ini')
 pkt = LXP::Packet::WriteSingle.new
 cmd = ARGV.shift
 case cmd
+when 'charge_power'
+  pkt.register = LXP::Packet::Registers::CHARGE_POWER_PERCENT_CMD
 when 'discharge_power'
   pkt.register = LXP::Packet::Registers::DISCHG_POWER_PERCENT_CMD
 when 'cutoff'

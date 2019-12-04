@@ -3,6 +3,9 @@
 class LXP
   class Packet
     module Registers
+      # System Charge Rate (%)
+      CHARGE_POWER_PERCENT_CMD = 64
+
       # System Discharge Rate (%)
       DISCHG_POWER_PERCENT_CMD = 65
 
