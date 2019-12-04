@@ -20,6 +20,7 @@ class LXP
       GRID_ON_POWER_SS       = 1 << 6
       NEUTRAL_DETECT_ENABLE  = 1 << 5
       ANTI_ISLAND_ENABLE     = 1 << 4
+      R21_UNKNOWN_BIT_3      = 1 << 3
       DRMS_ENABLE            = 1 << 2
       OVF_LOAD_DERATE_ENABLE = 1 << 1
       POWER_BACKUP_ENABLE    = 1 << 0
