@@ -9,7 +9,7 @@ class LXP
       # System Discharge Rate (%)
       DISCHG_POWER_PERCENT_CMD = 65
 
-      # AC Charge Enable; 100=on?
+      # Grid Charge Power Rate (%)
       AC_CHARGE_POWER_CMD = 66
 
       # Discharge cut-off SOC (%)

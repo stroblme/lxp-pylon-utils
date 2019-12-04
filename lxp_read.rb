@@ -17,8 +17,6 @@ pkt = LXP::Packet::ReadHold.new
 pkt = LXP::Packet::ReadHold.new
 cmd = ARGV.shift
 pkt.register = case cmd
-               when 'ac_charge'
-                 LXP::Packet::Registers::AC_CHARGE_POWER_CMD
                when 'harge_power'
                  LXP::Packet::Registers::CHARGE_POWER_PERCENT_CMD
                when 'discharge_power'
