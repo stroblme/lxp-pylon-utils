@@ -20,7 +20,7 @@ pkt = LXP::Packet::WriteSingle.new
 cmd = ARGV.shift
 case cmd
 when 'ac_charge'
-  pkg.register = LXP::Packet::Registers::AC_CHARGE_POWER_CMD
+  pkt.register = LXP::Packet::Registers::AC_CHARGE_POWER_CMD
 when 'charge_power'
   pkt.register = LXP::Packet::Registers::CHARGE_POWER_PERCENT_CMD
 when 'discharge_power'
