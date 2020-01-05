@@ -7,6 +7,7 @@ GEM
     influxdb (0.7.0)
     inifile (3.0.0)
     jaro_winkler (1.5.3)
+    lxp-packet (0.1.0)
     parallel (1.17.0)
     parser (2.6.3.0)
       ast (~> 2.4.0)
@@ -49,6 +50,7 @@ PLATFORMS
 DEPENDENCIES
   influxdb
   inifile
+  lxp-packet
   pastel
   rb-inotify
   roda

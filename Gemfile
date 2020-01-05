@@ -2,6 +2,8 @@
 
 source 'https://rubygems.org'
 
+gem 'lxp-packet'
+
 gem 'influxdb'
 gem 'inifile'
 gem 'pastel'
