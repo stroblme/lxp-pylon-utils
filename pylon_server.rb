@@ -10,7 +10,7 @@
 
 $LOAD_PATH.unshift './lib'
 
-require 'bundler/setup'
+# require 'bundler/setup'
 
 require 'rubyserial'
 require 'json'
@@ -35,7 +35,7 @@ end
 
 # start a dead simple webserver
 Thread.new do
-  Rack::Server.start(Host: '0.0.0.0', Port: 8080, app: Web)
+  Rack::Server.start(Host: '192.168.1.114', Port: 8090, app: Web)
 end
 
 def read_until_done(port)
@@ -104,7 +104,7 @@ def update_influx(data)
   influx.write_points(points)
 end
 
-port = Serial.new('/dev/ttyUSB0', 1200)
+port = Serial.new('/dev/ttyXRUSB1', 1200)
 analog = Pylon::Packet::Analog.new
 analog.command = 0xFF # all units
 
